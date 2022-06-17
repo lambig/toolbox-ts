@@ -2,7 +2,8 @@
 # toolbox-ts
 ## all / any / none / notAll
 
-Very simple functions to express logical evaluations.
+Very simple functions to express logical evaluations.  
+Evaluates boolean or function that returns boolean.
 ```
 all(
     true,
