@@ -1,3 +1,19 @@
+export type Proposition = () => boolean;
+export type ProPositionOrBoolean = Proposition | boolean;
+export type Predicate<E> = (arg: E) => boolean;
+export type Condition<E> = ProPositionOrBoolean | Predicate<E>;
+export type Supplier<E> = () => E;
+export type Returning<E> = E | ClassedSupplier<E>;
+export type Pattern<I, O> = [Condition<I>, Returning<O>];
+
+/**
+ * Array with (initially) fixed length
+ * big thanks to https://stackoverflow.com/a/59906630
+ */
+ export type FixedLengthArray<T extends any[]> =
+ Pick<T, Exclude<keyof T, ArrayLengthMutationKeys>>
+ & { [Symbol.iterator]: () => IterableIterator<ArrayItems<T>> }
+
 /**
  * 
  * @param target 
@@ -7,15 +23,9 @@ export function notNull<E>(target: E | null): target is E { return target !== nu
 
 type ArrayLengthMutationKeys = 'splice' | 'push' | 'pop' | 'shift' | 'unshift' | number
 type ArrayItems<T extends Array<any>> = T extends Array<infer TItems> ? TItems : never
-/**
- * Array with (initially) fixed length
- * big thanks to https://stackoverflow.com/a/59906630
- */
-export type FixedLengthArray<T extends any[]> =
-    Pick<T, Exclude<keyof T, ArrayLengthMutationKeys>>
-    & { [Symbol.iterator]: () => IterableIterator<ArrayItems<T>> }
 
-export type ProPositionOrBoolean = (() => boolean) | boolean;
+
+
 const isProPositionOrBoolean = (arg: unknown): arg is ProPositionOrBoolean => (typeof arg === "boolean" || typeof arg === "function");
 
 const truthy = (propositionOrBoolean: ProPositionOrBoolean) => typeof propositionOrBoolean === "boolean" ? propositionOrBoolean : propositionOrBoolean();
@@ -53,16 +63,7 @@ export const none = (...args: ProPositionOrBoolean[] | FixedLengthArray<[ProPosi
 export const notAll = (...args: ProPositionOrBoolean[] | FixedLengthArray<[ProPositionOrBoolean[]]>): boolean => !all(...args);
 
 
-export type Proposition = () => boolean;
-export type Predicate<E> = (arg: E) => boolean;
-export type Condition<E> = boolean | Predicate<E> | Proposition;
-export type Supplier<E> = () => E;
-export type Returning<E> = E | ClassedSupplier<E>;
-export type Pattern<I, O> = [Condition<I>, Returning<O>];
-
-const isBooleanSupplier = <E>(arg: Proposition | Predicate<E>): arg is Proposition => {
-    return !arg.length;
-}
+const isBooleanSupplier = <E>(arg: Proposition | Predicate<E>): arg is Proposition => !arg.length;
 const matchedBy = <I, O>(target: I) =>
     ([condition]: Pattern<I, O>): boolean =>
         typeof condition === "boolean"
@@ -71,8 +72,23 @@ const matchedBy = <I, O>(target: I) =>
                 ? condition()
                 : condition(target);
 const asValue = <I, O>([, valueOrValueSupplier]: Pattern<I, O>): O => valueOrValueSupplier instanceof ClassedSupplier ? valueOrValueSupplier.value() : valueOrValueSupplier
+/**
+ * defines patterns
+ * @param patterns tuples of Condition/Value
+ * @returns instance of a new Patterns
+ */
 export const patterns = <X, Y>(...patterns: Pattern<X, Y>[]): Patterns<X, Y> => Patterns.of(...patterns);
+/**
+ * defines supplier of value
+ * @param supplier function returns value
+ * @returns supplier as ClassedSupplier
+ */
 export const returnOf = <E>(supplier: Supplier<E>): ClassedSupplier<E> => new ClassedSupplier(supplier);
+/**
+ * defines default value for patterns
+ * @param returning default value or supplier of default value
+ * @returns default pattern
+ */
 export const orElse = <E>(returning: Returning<E>): [boolean, Returning<E>] => [true, returning];
 
 class ClassedSupplier<E>{
@@ -90,15 +106,30 @@ export class Patterns<I, O> {
     private constructor(patterns: Pattern<I, O>[]) {
         this.patterns = patterns;
     }
+    /**
+     * defines patterns
+     * @param patterns tuples of Condition/Value
+     * @returns instance of a new Patterns
+     */
     static of<X, Y>(...patterns: Pattern<X, Y>[]): Patterns<X, Y> {
         return new Patterns(patterns);
     }
 
+    /**
+     * 
+     * @param target to be evaluated by conditions in patterns
+     * @returns value in the first satisfied pattern by target
+     */
     firstSatisfiedBy(target: I): O | undefined {
         const value = this.patterns.find(matchedBy(target))?.[1];
         return value instanceof ClassedSupplier ? value.value() : value;
     }
 
+    /**
+     * 
+     * @param target to be evaluated by conditions in patterns
+     * @returns all values in satisfied patterns by target
+     */
     allSatisfiedBy(target: I): O[] {
         return this.patterns.filter(matchedBy(target)).map(asValue);
     }
