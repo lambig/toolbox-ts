@@ -1,4 +1,5 @@
 import { notNull, all, any, notAll, none } from "../src/index"
+import { Patterns, returnOf, orElse, patterns } from "../src/index"
 
 
 describe(
@@ -40,6 +41,7 @@ describe(
                 test("all false", () => expect(all([() => false, 1 > 5])).toBeFalsy())
             }
         )
+
         describe(
             "lazy evaluation",
             () => test("doesn't evaluate non-needed value", () =>
@@ -391,3 +393,84 @@ describe(
             )).toBeFalsy());
     }
 );
+
+describe(
+    "patterns#firstSatisfiedBy",
+    () => {
+        test("satisfying a condition", () =>
+            expect(
+                Patterns
+                    .of(
+                        [false, "some phrase"],
+                        [() => false, "another phrase"],
+                        [(target: string) => target.length > 5, returnOf(() => "yet another phrase")])
+                    .firstSatisfiedBy("abcdef"))
+                .toEqual("yet another phrase"));
+        test("satisfying multiple conditions", () =>
+            expect(
+                patterns(
+                    [false, "word"],
+                    [() => true, "some phrase"],
+                    [() => false, "another phrase"],
+                    [(target: string) => target.length > 5, returnOf(() => "yet another phrase")])
+                    .firstSatisfiedBy("abcdef"))
+                .toEqual("some phrase"));
+        test("not satisfied", () =>
+            expect(
+                patterns(
+                    [false, "word"],
+                    [() => false, "some phrase"],
+                    [() => false, "another phrase"],
+                    [(target: string) => target.length < 5, returnOf(() => "yet another phrase")])
+                    .firstSatisfiedBy("abcdef"))
+                .toBeUndefined());
+        test("default", () =>
+            expect(
+                patterns(
+                    [false, "word"],
+                    [() => false, "some phrase"],
+                    [() => false, "another phrase"],
+                    [(target: string) => target.length < 5, returnOf(() => "yet another phrase")],
+                    orElse("default phrase"))
+                    .firstSatisfiedBy("abcdef"))
+                .toEqual("default phrase"));
+        test("no conditions", () =>
+            expect(patterns().firstSatisfiedBy("abcdef"))
+                .toBeUndefined());
+
+    });
+
+describe("patterns#allSatisfiedBy",
+    () => {
+        test("satisfying a condition", () =>
+            expect(
+                Patterns
+                    .of(
+                        [false, "some phrase"],
+                        [() => false, "another phrase"],
+                        [(target: string) => target.length > 5, returnOf(() => "yet another phrase")])
+                    .allSatisfiedBy("abcdef"))
+                .toEqual(expect.arrayContaining(["yet another phrase"])));
+        test("satisfying multiple conditions", () =>
+            expect(
+                patterns(
+                    [false, "word"],
+                    [() => true, "some phrase"],
+                    [() => false, "another phrase"],
+                    [(target: string) => target.length > 5, returnOf(() => "yet another phrase")])
+                    .allSatisfiedBy("abcdef"))
+                .toEqual(expect.arrayContaining(["some phrase", "yet another phrase"])));
+        test("not satisfied", () =>
+            expect(
+                patterns(
+                    [false, "word"],
+                    [() => false, "some phrase"],
+                    [() => false, "another phrase"],
+                    [(target: string) => target.length < 5, returnOf(() => "yet another phrase")])
+                    .allSatisfiedBy("abcdef"))
+                .toEqual(expect.arrayContaining([])));
+        test("no conditions", () =>
+            expect(patterns().allSatisfiedBy("abcdef"))
+                .toEqual(expect.arrayContaining([])));
+    }
+)
