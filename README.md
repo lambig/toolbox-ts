@@ -70,14 +70,13 @@ Patterns
 
 You can define default value or its Supplier.
 ```
-Patterns
-    patterns(
-        [false, "word"],
-        [() => false, "some phrase"],
-        [() => false, "another phrase"],
-        [(target: string) => target.length < 5, returnOf(() => "yet another phrase")],
-        orElse("default phrase"))
-        .firstSatisfiedBy("abcdef")); // "default phrase"
+patterns(
+    [false, "word"],
+    [() => false, "some phrase"],
+    [() => false, "another phrase"],
+    [(target: string) => target.length < 5, returnOf(() => "yet another phrase")],
+    orElse("default phrase"))
+    .firstSatisfiedBy("abcdef")); // "default phrase"
 ```
 
 Also, you can collect all values of the patterns which satisfied by given value as an array.
