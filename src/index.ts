@@ -10,9 +10,9 @@ export type Pattern<I, O> = [Condition<I>, Returning<O>];
  * Array with (initially) fixed length
  * big thanks to https://stackoverflow.com/a/59906630
  */
- export type FixedLengthArray<T extends any[]> =
- Pick<T, Exclude<keyof T, ArrayLengthMutationKeys>>
- & { [Symbol.iterator]: () => IterableIterator<ArrayItems<T>> }
+export type FixedLengthArray<T extends any[]> =
+    Pick<T, Exclude<keyof T, ArrayLengthMutationKeys>>
+    & { [Symbol.iterator]: () => IterableIterator<ArrayItems<T>> }
 
 /**
  * 
