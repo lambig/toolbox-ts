@@ -88,3 +88,15 @@ patterns(
     [(target: string) => target.length > 5, returnOf(() => "yet another phrase")])
     .allSatisfiedBy("abcdef")) // ["some phrase", "yet another phrase"]
 ```
+
+## toApplicationTo
+```
+[
+    (a: number): string => `${a + 1}`,
+    (a: number): string => `${a + 2}`,
+    (a: number): string => `${a + 3}`,
+    (a: number): string => `${a + 4}`,
+    (a: number): string => `${a + 5}`
+]
+    .map(toApplicationTo(1)) // [2, 3, 4, 5, 6]
+```

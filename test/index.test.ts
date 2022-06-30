@@ -1,6 +1,6 @@
-import { notNull, all, any, notAll, none } from "../src/index"
-import { Patterns, returnOf, orElse, patterns } from "../src/index"
-
+import { notNull, all, any, notAll, none } from "../src/index";
+import { Patterns, returnOf, orElse, patterns } from "../src/index";
+import { toApplicationTo } from "../src/index";
 
 describe(
     "notNull",
@@ -474,3 +474,18 @@ describe("patterns#allSatisfiedBy",
                 .toEqual(expect.arrayContaining([])));
     }
 )
+
+describe("toApplicationTo",
+    () => {
+        test("application", () =>
+            expect(
+                [
+                    (a: number): string => `${a + 1}`,
+                    (a: number): string => `${a + 2}`,
+                    (a: number): string => `${a + 3}`,
+                    (a: number): string => `${a + 4}`,
+                    (a: number): string => `${a + 5}`
+                ]
+                    .map(toApplicationTo(1)))
+                .toEqual(expect.arrayContaining(["2", "3", "4", "5", "6"])));
+    });

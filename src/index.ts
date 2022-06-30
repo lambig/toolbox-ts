@@ -89,23 +89,25 @@ export const returnOf = <E>(supplier: Supplier<E>): ClassedSupplier<E> => new Cl
  * @param returning default value or supplier of default value
  * @returns default pattern
  */
-export const orElse = <E>(returning: Returning<E>): [boolean, Returning<E>] => [true, returning];
+export const orElse = <I, O>(returning: Returning<O>): Pattern<I, O> => [true, returning];
 
 class ClassedSupplier<E>{
-    private readonly supplier: Supplier<E>;
-    constructor(supplier: Supplier<E>) {
-        this.supplier = supplier;
-    }
+    constructor(
+        private readonly supplier: Supplier<E>
+    ) { }
+    /**
+     * returns the value of supplier
+     * @return value
+     */
     value(): E {
         return this.supplier();
     }
 };
 
 export class Patterns<I, O> {
-    private readonly patterns: Pattern<I, O>[];
-    private constructor(patterns: Pattern<I, O>[]) {
-        this.patterns = patterns;
-    }
+    private constructor(
+        private readonly patterns: Pattern<I, O>[]
+    ) { }
     /**
      * defines patterns
      * @param patterns tuples of Condition/Value
@@ -134,3 +136,10 @@ export class Patterns<I, O> {
         return this.patterns.filter(matchedBy(target)).map(asValue);
     }
 }
+
+/**
+ * map [f, g, h] to [f(target), g(target), h(target)]
+ * @param target 
+ * @returns 
+ */
+export const toApplicationTo = <I, O>(target: I) => (func: ((input: I) => O)) => func(target);
