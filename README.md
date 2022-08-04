@@ -44,7 +44,7 @@ notAll(
 
 ## Patterns
 
-Makes conditions/values easy to be expressed in patterns.
+Makes conditions/values easy to be expressed in patterns.  
 (NOTE: This is probably the next best thing, as a proper separation of concern should make implementation more concise. )
 
 ### Condition
