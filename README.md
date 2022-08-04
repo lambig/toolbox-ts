@@ -98,5 +98,5 @@ patterns(
     (a: number): string => `${a + 4}`,
     (a: number): string => `${a + 5}`
 ]
-    .map(toApplicationTo(1)) // [2, 3, 4, 5, 6]
+    .map(toApplicationTo(1)) // ["2", "3", "4", "5", "6"]
 ```
