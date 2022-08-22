@@ -30,8 +30,8 @@ all([
     none(
         false,
         () => true
-    ])
-)) // false
+    )]
+) // false
 ```
 Short-circuit evaluation is used.
 ```
