@@ -27,8 +27,9 @@ type ArrayItems<T extends Array<any>> = T extends Array<infer TItems> ? TItems :
 
 
 const isProPositionOrBoolean = (arg: unknown): arg is ProPositionOrBoolean => (typeof arg === "boolean" || typeof arg === "function");
-
-const truthy = (propositionOrBoolean: ProPositionOrBoolean) => typeof propositionOrBoolean === "boolean" ? propositionOrBoolean : propositionOrBoolean();
+const truthy = (propositionOrBoolean: ProPositionOrBoolean): boolean => propositionOrBoolean instanceof Function
+    ? truthy(propositionOrBoolean())
+    : Boolean(propositionOrBoolean);
 const propositionsOrBooleans = (args: ProPositionOrBoolean[] | FixedLengthArray<[ProPositionOrBoolean[]]>): ProPositionOrBoolean[] =>
     Array.isArray(args) && args.every(isProPositionOrBoolean)
         ? args

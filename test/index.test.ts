@@ -469,6 +469,15 @@ describe("patterns#allSatisfiedBy",
                     [(target: string) => target.length < 5, returnOf(() => "yet another phrase")])
                     .allSatisfiedBy("abcdef"))
                 .toEqual(expect.arrayContaining([])));
+        test("nested", () =>
+            expect(
+                patterns(
+                    [false, "word"],
+                    [() => false, "some phrase"],
+                    [() => false, "another phrase"],
+                    [(target: string) => target.length < 5, returnOf(() => "yet another phrase")])
+                    .allSatisfiedBy("abcdef"))
+                .toEqual(expect.arrayContaining([])));
         test("no conditions", () =>
             expect(patterns().allSatisfiedBy("abcdef"))
                 .toEqual(expect.arrayContaining([])));
