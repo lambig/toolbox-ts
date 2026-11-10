@@ -7,10 +7,16 @@ function check(api) {
     assert.equal(api.all(true, () => true), true);
     assert.equal(api.all(true, false), false);
 }
-check(require('toolbox-ts'));
+const cjs = require('toolbox-ts');
+check(cjs);
 const pkg = require('toolbox-ts/package.json');
 const root = path.dirname(require.resolve('toolbox-ts/package.json'));
-import(pathToFileURL(path.join(root, pkg.module)).href).then(api => {
-    check(api);
-    console.log('Installed toolbox-ts: CommonJS and ESM consumers passed.');
+Promise.all([
+    import('toolbox-ts'),
+    import(pathToFileURL(path.join(root, pkg.module)).href)
+]).then(([nodeImport, esmFile]) => {
+    assert.strictEqual(nodeImport.default, cjs, 'Node bare import must expose the CommonJS API');
+    check(nodeImport.default);
+    check(esmFile);
+    console.log('Installed toolbox-ts: require, Node bare import via CommonJS, and explicit ESM file passed.');
 }).catch(error => { console.error(error); process.exitCode = 1; });
