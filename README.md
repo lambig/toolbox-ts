@@ -1,5 +1,24 @@
 [![Node CI](https://github.com/lambig/toolbox-ts/actions/workflows/node-ci.yml/badge.svg?branch=main)](https://github.com/lambig/toolbox-ts/actions/workflows/node-ci.yml)
 # toolbox-ts
+
+## Package entry points
+
+In Node.js, both `require('toolbox-ts')` and a bare package import use
+the CommonJS `main` entry. For an ES module consumer, use the default import:
+
+```javascript
+import toolbox from 'toolbox-ts';
+const { notNull } = toolbox;
+```
+
+The `module` field describes the separate ESM build for bundlers that honor
+that field. Node does not use it when resolving the package name. Package tests
+check Node's bare import through CommonJS and separately import the ESM file
+to verify that artifact; they do not certify a particular bundler integration.
+Existing subpath imports and `package.json` access remain available without an
+`exports` map.
+
+See [Node package entry points](https://nodejs.org/api/packages.html#package-entry-points).
 ## all / any / none / notAll
 
 Very simple functions to express logical evaluations.  

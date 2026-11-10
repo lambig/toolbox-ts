@@ -37,3 +37,5 @@ jobs:
         run: npm test -- --runInBand
       - name: Build CommonJS and ES modules
         run: npm run build
+      - name: Verify npm package consumers
+        run: npm run test:package
