@@ -1,4 +1,4 @@
-[![Build Status](https://app.travis-ci.com/lambig/toolbox-ts.svg?token=rcXQxJszfB4WCpwsWNgN&branch=main)](https://app.travis-ci.com/lambig/toolbox-ts)
+[![Node CI](https://github.com/lambig/toolbox-ts/actions/workflows/node-ci.yml/badge.svg?branch=main)](https://github.com/lambig/toolbox-ts/actions/workflows/node-ci.yml)
 # toolbox-ts
 ## all / any / none / notAll
 
